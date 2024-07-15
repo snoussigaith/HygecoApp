@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactFormController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,6 +12,7 @@ Route::get('/', function () {
 Route::get('/pages/contact', function () {
     return view('contact');
 });
+Route::post('submit-contact-form', [App\Http\Controllers\ContactFormController::class, 'submitForm'])->name('submit-contact-form');
 //about
 Route::get('/pages/about', function () {
     return view('a-propos');
@@ -18,6 +21,8 @@ Route::get('/pages/about', function () {
 Route::get('/pages/contact-commercial', function () {
     return view('contact-commercial');
 });
+Route::post('submit-contact-commercial', [App\Http\Controllers\ContactCommercialController::class, 'submitForm'])->name('submit-contact-commercial');
+
 //plan
 Route::get('/pages/plan', function () {
     return view('plan');
@@ -38,6 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/contacts', [App\Http\Controllers\ContactFormController::class, 'index'])->name('contacts');
+    Route::get('/contacts-commercial', [App\Http\Controllers\ContactCommercialController::class, 'index'])->name('contacts-commercial');
+
 });
 Route::group(['middleware' => ['role:SubAdmin|admin']], function() {
 
@@ -53,6 +61,9 @@ Route::group(['middleware' => ['role:SubAdmin|admin']], function() {
     Route::get('users/{userId}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
 
 });
+
+
+
 
 
 

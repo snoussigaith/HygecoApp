@@ -75,6 +75,9 @@
                         pour répondre à vos attentes spécifiques. Notre équipe se déplace pour évaluer vos besoins et
                         vous proposer des solutions adaptées. </p>
                 </div>
+                 @if (session('status'))
+            <div class="alert alert-success">{{ session('status') }}</div>
+            @endif 
                 <section data-v-1fe27a18="" class="cleaning-quote position-relative">
                     <div data-v-1fe27a18="" class="cleaning-thumbing"><img data-v-1fe27a18="" decoding="async"
                             src="../assets/img/2.png" alt="Contactez-nous"></div>
@@ -141,7 +144,8 @@
                                         <ul data-v-1fe27a18=""></ul>
                                     </div>
                                     <form data-v-1fe27a18="" class="wpcf7-form init clenis-cf7-form"
-                                        aria-label="Contact form">
+                                        aria-label="Contact form"  method="POST" action="{{ route('submit-contact-commercial') }}">
+                                        @csrf
                                         <div data-v-1fe27a18="" class="cleaning-form wow fadeInUp" data-wow-delay="0.6s"
                                             style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInUp;">
                                             <div data-v-1fe27a18="" class="row g-4">

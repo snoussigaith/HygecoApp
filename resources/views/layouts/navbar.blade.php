@@ -2,6 +2,9 @@
 			<div class="sidebar-inner slimscroll">
 				<div id="sidebar-menu" class="sidebar-menu">
 					<ul>
+						@can('view user')
+							
+						
 						<li class="active"> <a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a> </li>
 						<li class="list-divider"></li>
 						<li class="submenu"> <a href="#"><i class="fas fa-key"></i> <span> Permission </span> <span class="menu-arrow"></span></a>
@@ -22,7 +25,18 @@
 								<li><a href="{{ url('users/create') }}"> Add User </a></li>
 							</ul>
 						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-address-book"></i> <span> Contacts </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{route('contacts')}}"> All Contact</a></li>
+							</ul>
+						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-briefcase"></i> <span> Contacts Commercial </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{route('contacts-commercial')}}"> All Contact</a></li>
+							</ul>
+						</li>
 						
+						@endcan
 					</ul>
 				</div>
 			</div>

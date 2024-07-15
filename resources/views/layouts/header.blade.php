@@ -76,7 +76,7 @@
 							<div class="avatar avatar-sm"> <img src="{{asset('assets/img/profiles/avatar-01.jpg')}}" alt="User Image" class="avatar-img rounded-circle"> </div>
 							<div class="user-text">
 								<h6>{{ Auth::user()->name }}</h6>
-								<p class="text-muted mb-0">Administrator</p>
+								<p class="text-muted mb-0">{{ Auth::user()->roles->pluck('name')->implode(', ') }}</p>
 							</div>
 						</div>
                          <a class="dropdown-item" href="{{route('profile.edit')}}">My Profile</a> 
