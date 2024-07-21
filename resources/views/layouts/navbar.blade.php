@@ -35,6 +35,18 @@
 								<li><a href="{{route('contacts-commercial')}}"> All Contact</a></li>
 							</ul>
 						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-concierge-bell"></i> <span> Services </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('service') }}"> All Services</a></li>
+								<li><a href="{{ url('service/create') }}"> Add Service </a></li>
+							</ul>
+						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-cogs"></i> <span> Options </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('option') }}"> All Options</a></li>
+								<li><a href="{{ url('option/create') }}"> Add Option </a></li>
+							</ul>
+						</li>
 						
 						@endcan
 					</ul>

@@ -7,10 +7,8 @@
             <div class="row align-items-center">
                 <div class="col">
                     <div class="mt-5">
-                        <h4 class="card-title float-left mt-2">Users</h4>
-                        @can('create user')
-                        <a href="{{ url('users/create') }}" class="btn btn-primary float-right veiwbutton">Add user</a>
-                        @endcan
+                        <h4 class="card-title float-left mt-2">Service</h4>
+                        <a href="{{ url('service/create') }}" class="btn btn-primary float-right veiwbutton">Add Service</a>
                     </div>
                 </div>
             </div>
@@ -26,42 +24,39 @@
                             <table class="datatable table table-stripped table-hover table-center mb-0">
                                 <thead>
                                     <tr>
-                                        <th>User ID</th>
+                                        <th>Service ID</th>
                                         <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Roles</th>
-                                        <th class="text-right">Actions</th>
+                                        <th>Options</th>
+                                        <th>Price</th>
+                                        <th>Total Price</th>
+                                        <th class="text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
+                                    @foreach ($services as $service)
                                     <tr>
-                                        <td>{{ $user->id }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                         <td class="text-left">
-                                            @if (!empty($user->getRoleNames()))
-                                                @foreach ($user->getRoleNames() as $rolename)
-                                                    <span class="badge badge-pill bg-success inv-badge">{{ $rolename }}</span>
+                                        <td>{{ $service->id }}</td>
+                                        <td>{{ $service->name }}</td>
+                                        <td class="text-left">
+                                            @if(is_array($service->options))
+                                                @foreach ($service->options as $option)
+                                                    <span class="badge badge-pill bg-success inv-badge">{{ $option['name'] }}</span>
                                                 @endforeach
                                             @endif
                                         </td>
-                                        <td class="text-right" >
-                                          @can('update user')  
-                                            <a  href="{{ url('users/'.$user->id.'/edit') }}">
-                                                <i class="fas fa-pencil-alt m-r-5"></i> 
+                                        <td>{{ $service->price }} $</td>
+                                        <td>{{ $service->total_price }} $</td>
+                                        <td class="text-right">
+                                            <a href="{{ url('service/'.$service->id.'/edit') }}">
+                                                <i class="fas fa-pencil-alt m-r-5"></i>
                                             </a>
-                                          @endcan
-                                          @can('delete user')  
-                                            <a  href="{{ url('users/'.$user->id.'/delete') }}" >
-                                                <i class="fas fa-trash-alt m-r-5"></i> 
+                                            <a href="{{ url('service/'.$service->id.'/delete') }}">
+                                                <i class="fas fa-trash-alt m-r-5"></i>
                                             </a>
-                                          @endcan  
-                                            
                                         </td>
                                     </tr>
-                                    @endforeach                               
-                                 </tbody>
+                                    @endforeach
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -74,10 +69,10 @@
             <div class="modal-content">
                 <div class="modal-body text-center">
                     <img src="assets/img/sent.png" alt="" width="50" height="46">
-                    <h3 class="delete_class">Are you sure want to delete this User?</h3>
+                    <h3 class="delete_class">Are you sure want to delete this service?</h3>
                     <div class="m-t-20">
                         <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
-                        <a href="{{ url('users/'.$user->id.'/delete') }}">
+                        <a href="">
                         <button type="submit" class="btn btn-danger">Delete</button>
                         </a>
                     </div>
@@ -87,5 +82,3 @@
     </div>
 </div>
 @endsection
-
-

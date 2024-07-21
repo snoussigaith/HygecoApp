@@ -27,8 +27,8 @@
                                     class="nav-link {{ Request::is('pages/services') ? 'active' : '' }} " >Services Résidentiels</a>
                             </li>
                             <li data-v-39bd6a58="" class="mx-2 nav-item">
-                                <a data-v-39bd6a58="" aria-current="page" href="/pages/menage"
-                                    class="nav-link {{ Request::is('pages/menage') ? 'active' : '' }} " >Réservation Ménage</a>
+                                <a data-v-39bd6a58="" aria-current="page" href="/reservation"
+                                    class="nav-link {{ Request::is('reservation') ? 'active' : '' }} " >Réservation Ménage</a>
                             </li>
                              <li data-v-39bd6a58="" class="mx-2 nav-item">
                                 <a data-v-39bd6a58="" aria-current="page" href="/pages/plan"
