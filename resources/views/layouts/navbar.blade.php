@@ -47,6 +47,16 @@
 								<li><a href="{{ url('option/create') }}"> Add Option </a></li>
 							</ul>
 						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span> Reservations </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('reservation/all') }}"> All Reservations</a></li>
+							</ul>
+						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-user"></i> <span> Clients </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('clients/all') }}"> All Clients</a></li>
+							</ul>
+						</li>
 						
 						@endcan
 					</ul>

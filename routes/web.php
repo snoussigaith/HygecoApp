@@ -85,7 +85,7 @@ Route::put('/option/{option}', [App\Http\Controllers\OptionController::class, 'u
 
 
 //Booking
-Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservation');
+Route::get('/reservation/all', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservation');
 
 Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'create'])->name('reservation.create');
 Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
@@ -95,6 +95,10 @@ Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.ind
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+
+
+Route::get('/clients/all', [App\Http\Controllers\ClientController::class, 'index'])->name('client');
+
 
 
 

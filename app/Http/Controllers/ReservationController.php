@@ -8,14 +8,20 @@ use App\Models\Option;
 use Carbon\Carbon;
 use App\Models\Reservation;
 use App\Models\Booking;
+use App\Models\Client;
+use Illuminate\Support\Facades\Log; // Add this line
+
 
 class ReservationController extends Controller
 {
 
  public function index()
     {
-        $bookings = Booking::all();
-        return view('reservation', compact('bookings'));
+        $reservations = Reservation::all();
+         foreach ($reservations as $reservation) {
+        $reservation->options = json_decode($reservation->options, true);
+    }
+        return view('reservation.index', compact('reservations'));
     }
     
    public function create()
@@ -28,59 +34,64 @@ class ReservationController extends Controller
 }
 public function store(Request $request)
 {
-    // Validate the request
-    $validatedData = $request->validate([
+    // Validate input
+    $request->validate([
+        'name' => 'required|string|filled',
+        'last_name' => 'required|string|filled',
+        'phone' => 'required|string|filled',
+        'address' => 'required|string|filled',
+        'apt_suite' => 'required|string|filled',
+        'city' => 'required|string|filled',
+        'zip' => 'required|string|filled',
+        'email' => 'required|email',
         'service_id' => 'required|integer',
-        'chambre_count' => 'required|integer|min:1|max:6',
-        'bain_count' => 'required|integer|min:1|max:6',
-        'cuisine_count' => 'required|integer|min:1|max:6',
-        'selected_options' => 'array',
+        'service_name' => 'required|string',
+        'chambre_count' => 'required|integer',
+        'bain_count' => 'required|integer',
+        'cuisine_count' => 'required|integer',
+        'carpet_count' => 'required|integer',
+        'selected_options' => 'required|array',
+        'frequency' => 'required|string',
+        'etat' => 'required|string',
+        'total_price' => 'required|numeric',
     ]);
 
-    // Log the input data for debugging
-    \Log::info('Request Data:', $validatedData);
+    try {
+        // Save client
+        $client = new Client();
+        $client->name = $request->input('name');
+        $client->email = $request->input('email');
+        $client->phone = $request->input('phone');
+        $client->address = $request->input('address');
+        $client->apt_suite = $request->input('apt_suite');
+        $client->city = $request->input('city');
+        $client->zip = $request->input('zip');
+        $client->last_name = $request->input('last_name');
+        $client->save();
+        
+        // Save reservation
+        $reservation = new Reservation();
+        $reservation->service_id = $request->input('service_id');
+        $reservation->service_name = $request->input('service_name');
+        $reservation->chambre_count = $request->input('chambre_count');
+        $reservation->bain_count = $request->input('bain_count');
+        $reservation->cuisine_count = $request->input('cuisine_count');
+        $reservation->carpet_count = $request->input('carpet_count');
+        $reservation->options = json_encode($request->input('selected_options'));
+        $reservation->frequency = $request->input('frequency');
+        $reservation->etat = $request->input('etat');
+        $reservation->total_price = $request->input('total_price');
+        $reservation->client_id = $client->id; // Assuming you have a client_id field in your reservations table
+        $reservation->save();
 
-    // Create a new reservation
-    $reservation = new Reservation();
-    $reservation->service_id = $validatedData['service_id'];
-    $reservation->chambre_count = $validatedData['chambre_count'];
-    $reservation->bain_count = $validatedData['bain_count'];
-    $reservation->cuisine_count = $validatedData['cuisine_count'];
+        return response()->json(['message' => 'Reservation created successfully with options']);
+    } catch (\Exception $e) {
+        // Log the error
+        Log::error($e->getMessage());
 
-    // Calculate the total price
-    $service = Service::find($validatedData['service_id']);
-    $totalPrice = $service->price;
-    if ($validatedData['chambre_count'] > 1) {
-        $totalPrice += ($validatedData['chambre_count'] - 1) * 15; // Price per chambre
+        return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
     }
-    if ($validatedData['bain_count'] > 1) {
-        $totalPrice += ($validatedData['bain_count'] - 1) * 30; // Price per salle de bain
-    }
-    if ($validatedData['cuisine_count'] > 1) {
-        $totalPrice += ($validatedData['cuisine_count'] - 1) * 40; // Price per cuisine
-    }
-    if (isset($validatedData['selected_options'])) {
-        foreach ($validatedData['selected_options'] as $optionId) {
-            $option = Option::find($optionId);
-            if ($option) {
-                $totalPrice += $option->price;
-            }
-        }
-    }
-    $reservation->total_price = $totalPrice;
-
-    // Save the reservation
-    $reservation->save();
-
-    // Associate the selected options with the reservation
-    if (isset($validatedData['selected_options'])) {
-        $reservation->options()->sync($validatedData['selected_options']);
-    }
-
-    // Redirect or return a response
-    return redirect()->route('reservation.create')->with('status', 'Reservation created successfully.');
 }
-
 
 
 

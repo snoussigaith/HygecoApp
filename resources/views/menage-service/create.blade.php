@@ -37,10 +37,7 @@
                         </div>
                     </div>
                  
-                    <div class="form-group">
-                        <label>Total Price: </label>
-                        <span>0.00</span> $
-                    </div>
+                   
                     <div class="m-t-20">
                         <button class="btn btn-primary submit-btn">Create Service</button>
                     </div>
