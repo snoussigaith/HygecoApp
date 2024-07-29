@@ -21,6 +21,8 @@ class Reservation extends Model
         'bain_count',
         'cuisine_count',
         'client_id',
+        'date',
+        'time',
         
     ];
 

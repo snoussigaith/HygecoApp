@@ -14,7 +14,15 @@ use Illuminate\Support\Facades\Log; // Add this line
 
 class ReservationController extends Controller
 {
+public function confirm($id)
+{
+    $reservation = Reservation::findOrFail($id);
+    $reservation->status = '1';
+    $reservation->save();
 
+   
+    return redirect()->route('reservation')->with('success', 'Reservation confirmed and email sent to client.');
+}
  public function index()
     {
         $reservations = Reservation::all();
@@ -54,6 +62,9 @@ public function store(Request $request)
         'frequency' => 'required|string',
         'etat' => 'required|string',
         'total_price' => 'required|numeric',
+        'date' => 'required|date|date_format:Y-m-d',
+        'time' => 'required|string',
+
     ]);
 
     try {
@@ -80,11 +91,13 @@ public function store(Request $request)
         $reservation->options = json_encode($request->input('selected_options'));
         $reservation->frequency = $request->input('frequency');
         $reservation->etat = $request->input('etat');
+        $reservation->time = $request->input('time');
+        $reservation->date = $request->input('date');
         $reservation->total_price = $request->input('total_price');
         $reservation->client_id = $client->id; // Assuming you have a client_id field in your reservations table
         $reservation->save();
 
-        return response()->json(['message' => 'Reservation created successfully with options']);
+        return redirect()->route('reservation.success')->with('message', 'Reservation created successfully');
     } catch (\Exception $e) {
         // Log the error
         Log::error($e->getMessage());

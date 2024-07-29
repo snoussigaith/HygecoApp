@@ -43,70 +43,76 @@ class ServiceController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|decimal:2',
-            'options' => 'nullable|array',
-            'options.*' => 'exists:options,id'
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|decimal:2',
+        'options' => 'nullable|array',
+        'options.*' => 'exists:options,id',
+        'has_frequency' => 'filled',
+        'has_base' => 'filled'
+    ]);
 
-        $price = $request->price;
-        $options = [];
+    $price = $request->price;
+    $options = [];
 
-        if ($request->options) {
-            foreach ($request->options as $optionId) {
-                $option = Option::findOrFail($optionId);
-                // $price += $option->price;
-                $options[] = [
-                    'id' => $optionId,
-                    'name' => $option->name,
-                    'price' => $option->price
-                ];
-            }
+    if ($request->options) {
+        foreach ($request->options as $optionId) {
+            $option = Option::findOrFail($optionId);
+            $options[] = [
+                'id' => $optionId,
+                'name' => $option->name,
+                'price' => $option->price
+            ];
         }
-
-        $service = Service::create([
-            'name' => $request->name,
-            'price' => $price,
-            'options' => json_encode($options) // Store options as JSON
-        ]);
-
-        return redirect('/service')->with('status', 'Service created successfully with options');
     }
 
-    public function update(Request $request, Service $service)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|decimal:2',
-            'options' => 'nullable|array',
-            'options.*' => 'exists:options,id'
-        ]);
+    $service = Service::create([
+        'name' => $request->name,
+        'price' => $price,
+        'options' => json_encode($options), // Store options as JSON
+        'has_frequency' => $request->has('has_frequency'),
+        'has_base' => $request->has('has_base')
+    ]);
 
-        $price = $request->price;
-        $options = [];
+    
+    return redirect('/service')->with('status', 'Service created successfully with options');
+}
 
-        if ($request->options) {
-            foreach ($request->options as $optionId) {
-                $option = Option::findOrFail($optionId);
-                // $price += $option->price;
-                $options[] = [
-                    'id' => $optionId,
-                    'name' => $option->name,
-                    'price' => $option->price
-                ];
-            }
+public function update(Request $request, Service $service)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|decimal:2',
+        'options' => 'nullable|array',
+        'options.*' => 'exists:options,id',
+        'has_frequency' => 'filled',
+        'has_base' => 'filled'
+    ]);
+
+    $price = $request->price;
+    $options = [];
+
+    if ($request->options) {
+        foreach ($request->options as $optionId) {
+            $option = Option::findOrFail($optionId);
+            $options[] = [
+                'id' => $optionId,
+                'name' => $option->name,
+                'price' => $option->price
+            ];
         }
-
-        $service->update([
-            'name' => $request->name,
-            'price' => $price,
-            'options' => json_encode($options) // Update options as JSON
-        ]);
-
-        return redirect('/service')->with('status', 'Service updated successfully with options');
     }
+
+    $service->update([
+        'name' => $request->name,
+        'price' => $price,
+        'options' => json_encode($options), // Update options as JSON
+        'has_frequency' => $request->has('has_frequency'),
+        'has_base' => $request->has('has_base')
+    ]);
+    return redirect('/service')->with('status', 'Service updated successfully with options');
+}
 
     public function edit(Service $service)
     {

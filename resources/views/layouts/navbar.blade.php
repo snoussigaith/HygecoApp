@@ -2,7 +2,7 @@
 			<div class="sidebar-inner slimscroll">
 				<div id="sidebar-menu" class="sidebar-menu">
 					<ul>
-						@can('view user')
+						
 							
 						
 						<li class="active"> <a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a> </li>
@@ -58,7 +58,6 @@
 							</ul>
 						</li>
 						
-						@endcan
 					</ul>
 				</div>
 			</div>

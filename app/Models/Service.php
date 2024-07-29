@@ -16,6 +16,8 @@ class Service extends Model
         'name',
         'price',
         'options', // Include options in the fillable array
+        'has_frequency',
+        'has_base',
     ];
 
     public function options()

@@ -156,6 +156,7 @@
                 <div class="form-group" id="frequency-group" style="display: none;">
                     <label for="frequency">Frequency</label>
                     <select name="frequency" id="frequency" class="form-control">
+                        <option value="one">One time</option>
                         <option value="monthly">Monthly</option>
                         <option value="weekly">Weekly</option>
                         <option value="biweekly">Biweekly</option>
@@ -209,7 +210,18 @@
                     <label for="carpet_count">Nombre de Tapis</label>
                     <input type="number" class="form-control" id="carpet_count" name="carpet_count" min="0" value="0">
                 </div>
-
+                <div class="row">
+                    <div class="col-sm-6"><label for="date">Date:</label>
+                    <input class="form-control" type="text" id="date" name="date" required>
+                </div>
+                    <div class="col-sm-6"><label for="time">Time:</label>
+                    <select class="form-control" id="time" name="time" required>
+                        <option value="9:00">9:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="15:00">15:00</option>
+                    </select></div>
+                </div>
+                
                 <div class="form-group" id="etats-group">
                     <label for="etat">Etats</label>
                     <select class="form-control" id="etat" name="etat">
@@ -330,25 +342,23 @@
   
 
 <script>
-   const allOptions = @json($options);
+const allOptions = @json($options);
 let selectedOptions = new Set();
+let nonDeselectableOptions = new Set();
 
 function loadOptions(serviceId) {
     const service = @json($services).find(service => service.id == serviceId);
     const optionsContainer = document.getElementById('options-container');
     const frequencyGroup = document.getElementById('frequency-group');
-    const baseGroup = document.getElementById('base');
+    const baseGroup = document.getElementById('base'); // Adjusted ID to match the HTML
 
-    if (service.name === 'menage regulier') {
-        frequencyGroup.style.display = 'block';
-        baseGroup.style.display = 'block';
-    } else {
-        frequencyGroup.style.display = 'none';
-        baseGroup.style.display = 'none';
-    }
+    // Show or hide frequency and base groups based on service attributes
+    frequencyGroup.style.display = service.has_frequency ? 'block' : 'none';
+    baseGroup.style.display = service.has_base ? 'block' : 'none';
 
     // Clear existing options
     optionsContainer.innerHTML = '';
+    nonDeselectableOptions.clear();
 
     if (service) {
         const serviceOptions = JSON.parse(service.options);
@@ -358,7 +368,7 @@ function loadOptions(serviceId) {
             const extraOption = `
                 <tui-booking-service-extra data-v-2e87ca52="" class="col-sm-3 col-xs-4">
                     <div class="extra-option" data-v-2e87ca52="">
-                        <div data-v-2e87ca52="" class="extra-icon" id="extra-${option.id}" ${isSelected ? 'style="background-color: green;"' : ''}>
+                        <div data-v-2e87ca52="" class="extra-icon" id="extra-${option.id}" ${isSelected ? 'style="background-color: red;"' : ''}>
                             <img data-v-2e87ca52="" onclick="toggleOption(${option.id}, ${option.price})" src="../assets/img/option.png">
                         </div>
                         <div class="extra-text">${option.name}</div>
@@ -369,6 +379,7 @@ function loadOptions(serviceId) {
             // Update selectedOptions if the option is pre-selected
             if (isSelected) {
                 selectedOptions.add(option.id);
+                nonDeselectableOptions.add(option.id); // Mark as non-deselectable
             }
         });
 
@@ -387,6 +398,11 @@ function loadOptions(serviceId) {
 }
 
 function toggleOption(optionId, optionPrice) {
+    // Prevent deselection of non-deselectable options
+    if (nonDeselectableOptions.has(optionId)) {
+        return;
+    }
+
     const optionElement = document.getElementById(`extra-${optionId}`);
     if (selectedOptions.has(optionId)) {
         selectedOptions.delete(optionId);
@@ -489,6 +505,9 @@ document.getElementById('booking-form').addEventListener('submit', async functio
     const clientApt = formData.get('apt_suite');
     const clientCity = formData.get('city');
     const clientZip = formData.get('zip');
+    const date = formData.get('date');
+     const timeSelect = document.getElementById('time');
+    const selectedTime = timeSelect ? timeSelect.value : null;
     const serviceSelect = document.getElementById('service');
     const selectedServiceName = serviceSelect.options[serviceSelect.selectedIndex].text;
     const totalPrice = parseFloat(document.getElementById('total-price').textContent);
@@ -525,13 +544,14 @@ document.getElementById('booking-form').addEventListener('submit', async functio
                 zip: clientZip,
                 frequency: selectedFrequency,
                 etat: selectedEtat,
+                date: date,
+                time: selectedTime,
             }),
         });
 
         if (response.ok) {
-            const data = await response.json();
-            // Handle successful response, e.g., show a success message or redirect
-            console.log(data);
+            window.location.href = '{{ route('reservation.success') }}';
+        
         } else {
             const errorData = await response.json();
             console.error('Error:', errorData.error);
@@ -540,6 +560,13 @@ document.getElementById('booking-form').addEventListener('submit', async functio
         console.error('Fetch error:', error);
     }
 });
+$( function() {
+    $( "#date" ).datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0
+    });
+} );
+
 
 </script>
 

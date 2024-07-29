@@ -6,22 +6,22 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="page-title mt-5">Add Service</h3> 
+                    <h3 class="page-title mt-5">Add Service</h3>
                 </div>
             </div>
         </div>
-         
+        
         <div class="row">
             <div class="col-lg-8">
                 <form action="{{ url('/service/add') }}" method="POST">
                     @csrf
                     <div class="form-group">
                         <label>Service Name <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" name="name"> 
+                        <input class="form-control" type="text" name="name">
                     </div>
                     <div class="form-group">
                         <label>Price <span class="text-danger">*</span></label>
-                        <input class="form-control" type="number" step="0.01" name="price" id="servicePrice" oninput="calculateTotal()"> 
+                        <input class="form-control" type="number" step="0.01" name="price" id="servicePrice" oninput="calculateTotal()">
                     </div>
                     <div class="form-group">
                         <label>Options</label>
@@ -36,28 +36,47 @@
                             @endforeach
                         </div>
                     </div>
-                 
-                   
+                    <div class="form-group">
+                        <label>Has Frequency</label>
+                        <div class="custom-control custom-switch">
+
+                            <input type="checkbox" class="custom-control-input" id="hasFrequency" name="has_frequency">
+                            <label class="custom-control-label" for="hasFrequency"></label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Has Base</label>
+                        <div class="custom-control custom-switch">
+
+                            <input type="checkbox" class="custom-control-input" id="hasBase" name="has_base">
+                            <label class="custom-control-label" for="hasBase"></label>
+                        </div>
+                    </div>
                     <div class="m-t-20">
                         <button class="btn btn-primary submit-btn">Create Service</button>
                     </div>
                 </form>
             </div>
-               <div class="col-xl-3 col-sm-6 col-12">
-						<div class="card board1 fill">
-							<div class="card-body">
-								<div class="dash-widget-header">
-									<div>
-										<h3 class="card_widget_header"  id="totalPrice" >0.00</h3>
-										<h6 class="text-muted">Prix Total</h6> </div>
-									<div class="ml-auto mt-md-3 mt-lg-0"> <span class="opacity-7 text-muted"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="#009688" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign">
-									<line x1="12" y1="1" x2="12" y2="23"></line>
-									<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-									</svg></span> </div>
-								</div>
-							</div>
-						</div>
-					</div>
+            <div class="col-xl-3 col-sm-6 col-12">
+                <div class="card board1 fill">
+                    <div class="card-body">
+                        <div class="dash-widget-header">
+                            <div>
+                                <h3 class="card_widget_header" id="totalPrice">0.00</h3>
+                                <h6 class="text-muted">Prix Total</h6>
+                            </div>
+                            <div class="ml-auto mt-md-3 mt-lg-0">
+                                <span class="opacity-7 text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009688" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

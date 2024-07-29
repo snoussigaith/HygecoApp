@@ -89,6 +89,8 @@ Route::get('/reservation/all', [App\Http\Controllers\ReservationController::clas
 
 Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'create'])->name('reservation.create');
 Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
+Route::get('/reservation/confirm/{id}', [App\Http\Controllers\ReservationController::class, 'confirm'])->name('reservation.confirm');
+
 
 
 Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
@@ -98,6 +100,17 @@ Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('b
 
 
 Route::get('/clients/all', [App\Http\Controllers\ClientController::class, 'index'])->name('client');
+
+Route::get('/reservation-success', function () {
+    return view('reservation-success'); 
+})->name('reservation.success');
+
+// In your web.php or controller method
+Route::get('/debug', function () {
+    return session('message');
+});
+
+
 
 
 

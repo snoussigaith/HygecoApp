@@ -11,9 +11,13 @@
                     </div>
                 </div>
             </div>
-         
+          @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
         </div>
+        
         <div class="row">
+            
             <div class="col-sm-12">
                 <div class="card card-table">
                     <div class="card-body booking_card">
@@ -25,7 +29,10 @@
                                         <th>Service Name</th>
                                         <th>Options</th>
                                         <th>Client Email</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
                                         <th>Total Price</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -47,9 +54,17 @@
                                             @endif
                                         </td>
                                         <td>{{ $reservation->client->email }}</td>
+                                        <td>{{ $reservation->date }}</td>
+                                        <td>{{ $reservation->time }}</td>
                                         <td>{{ $reservation->total_price }} $</td>
                                         <td class="text-right">
-                                            
+                                            @if ($reservation->status == '1')
+                                                <span class="badge badge-pill bg-success inv-badge">Confirmé</span>
+                                            @else
+                                                <a href="{{ route('reservation.confirm', $reservation->id) }}" class="btn btn-sm bg-success-light mr-2">
+                                                    <span >Confirmer</span>
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach
