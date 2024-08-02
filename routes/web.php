@@ -45,11 +45,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/contacts', [App\Http\Controllers\ContactFormController::class, 'index'])->name('contacts');
-    Route::get('/contacts-commercial', [App\Http\Controllers\ContactCommercialController::class, 'index'])->name('contacts-commercial');
+  
 
 });
-Route::group(['middleware' => ['role:SubAdmin|admin']], function() {
+Route::group(['middleware' => ['role:super-admin']], function() {
 
     Route::resource('permissions',  App\Http\Controllers\PermissionController::class);
     Route::get('permissions/{permissionId}/delete', [App\Http\Controllers\PermissionController::class, 'destroy']);
@@ -61,9 +60,9 @@ Route::group(['middleware' => ['role:SubAdmin|admin']], function() {
 
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::get('users/{userId}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
-
-});
-//service menage
+    Route::get('/contacts', [App\Http\Controllers\ContactFormController::class, 'index'])->name('contacts');
+    Route::get('/contacts-commercial', [App\Http\Controllers\ContactCommercialController::class, 'index'])->name('contacts-commercial');
+    //service menage
 Route::get('/service', [App\Http\Controllers\ServiceController::class, 'index'])->name('service.index');
 Route::get('/service/create', [App\Http\Controllers\ServiceController::class, 'create'])->name('service.create');
 Route::post('/service/add', [App\Http\Controllers\ServiceController::class, 'store'])->name('service.store');
@@ -71,10 +70,6 @@ Route::get('/service/{serviceId}/delete', [App\Http\Controllers\ServiceControlle
 Route::get('/service/{service}/edit', [App\Http\Controllers\ServiceController::class, 'edit']);
 Route::put('/service/{service}', [App\Http\Controllers\ServiceController::class, 'update']);
 Route::get('/service/{id}/options', [App\Http\Controllers\ServiceController::class, 'getOptions']);
-
-
-
-
 //Extra options
 Route::get('/option/create', [App\Http\Controllers\OptionController::class, 'create'])->name('option.create');
 Route::post('/option/add', [App\Http\Controllers\OptionController::class, 'store'])->name('option.store');
@@ -82,13 +77,8 @@ Route::get('/option', [App\Http\Controllers\OptionController::class, 'index'])->
 Route::get('/option/{optionId}/delete', [App\Http\Controllers\OptionController::class, 'destroy']);
 Route::get('/option/{option}/edit', [App\Http\Controllers\OptionController::class, 'edit']);
 Route::put('/option/{option}', [App\Http\Controllers\OptionController::class, 'update']);
-
-
-//Booking
 Route::get('/reservation/all', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservation');
-
-Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'create'])->name('reservation.create');
-Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
+Route::get('/clients/all', [App\Http\Controllers\ClientController::class, 'index'])->name('client');
 Route::get('/reservation/confirm/{id}', [App\Http\Controllers\ReservationController::class, 'confirm'])->name('reservation.confirm');
 
 
@@ -97,9 +87,31 @@ Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.ind
 Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+Route::get('/reservation/customize/{id}', [App\Http\Controllers\ReservationController::class, 'customize'])->name('reservation.customize');
+Route::post('/reservation/customize/{id}', [App\Http\Controllers\ReservationController::class, 'updateCustomization'])->name('reservation.updateCustomization');
 
 
-Route::get('/clients/all', [App\Http\Controllers\ClientController::class, 'index'])->name('client');
+});
+Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'create'])->name('reservation.create');
+Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
+Route::get('/mark-as-read', [App\Http\Controllers\ReservationController::class,'markAsRead'])->name('mark-as-read');
+
+
+
+
+
+
+
+
+
+Route::group(['middleware' => ['role:staff']], function() {
+//Booking
+Route::get('/reservations/all', [App\Http\Controllers\ReservationController::class, 'indexClient'])->name('reservations');
+
+});
+
+
+
 
 Route::get('/reservation-success', function () {
     return view('reservation-success'); 

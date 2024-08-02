@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Service;
 use App\Models\Option;
 use App\Models\Client;
+use App\Models\User;
+use Illuminate\Notifications\Notifiable;
+
 
 class Reservation extends Model
 {
-    use HasFactory;
+    use HasFactory ,Notifiable;
      protected $table = 'reservations';
 
      protected $fillable = [
@@ -23,6 +26,7 @@ class Reservation extends Model
         'client_id',
         'date',
         'time',
+        'user_id',
         
     ];
 
@@ -37,5 +41,9 @@ class Reservation extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

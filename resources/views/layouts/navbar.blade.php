@@ -3,7 +3,7 @@
 				<div id="sidebar-menu" class="sidebar-menu">
 					<ul>
 						
-							
+							@if(auth()->user()->hasRole('super-admin'))
 						
 						<li class="active"> <a href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a> </li>
 						<li class="list-divider"></li>
@@ -57,6 +57,14 @@
 								<li><a href="{{ url('clients/all') }}"> All Clients</a></li>
 							</ul>
 						</li>
+						 @endif
+						  @if(auth()->user()->hasRole('staff'))
+						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span>  Mes Reservations </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('reservations/all') }}"> All Reservations</a></li>
+							</ul>
+						</li>
+						@endif
 						
 					</ul>
 				</div>

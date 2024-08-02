@@ -13,11 +13,10 @@
             </div>
           @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+          @endif
         </div>
         
         <div class="row">
-            
             <div class="col-sm-12">
                 <div class="card card-table">
                     <div class="card-body booking_card">
@@ -27,49 +26,47 @@
                                     <tr>
                                         <th>Reservation ID</th>
                                         <th>Service Name</th>
-                                        <!-- <th>Options</th> -->
-                                        <th>Client Email</th>
+                                        <th>Options</th>
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Total Price</th>
                                         <th>Status</th>
+                                        <th>Client Email</th> 
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($reservations as $reservation)
+                                    @forelse ($reservations as $reservation)
                                     <tr>
                                         <td>RES-00{{ $reservation->id }}</td>
                                         <td>{{ $reservation->service_name }}</td>
-                                        <!-- <td class="text-left">
+                                        <td class="text-left">
                                             @php
-                                                // Decode the options if it's stored as a JSON string
                                                 $options = is_string($reservation->options) ? json_decode($reservation->options, true) : $reservation->options;
                                             @endphp
 
                                             @if(is_array($options))
                                                 @foreach ($options as $option)
-                                                    <span class="badge badge-pill bg-success inv-badge">{{$option}}
-                                        </span>
+                                                    <span class="badge badge-pill bg-success inv-badge">{{ $option }}</span>
                                                 @endforeach
                                             @endif
-                                        </td> -->
-                                        <td>{{ $reservation->client->email }}</td>
+                                        </td>
                                         <td>{{ $reservation->date }}</td>
                                         <td>{{ $reservation->time }}</td>
                                         <td>{{ $reservation->total_price }} $</td>
-                                        <td class="text-right">
-                                            @if ($reservation->status == '1')
-                                                <span class="badge badge-pill bg-success inv-badge">Confirmé</span>
+                                        <td >
+                                            @if ($reservation->status == 1)
+                                                <span class="badge badge-pill bg-success inv-badge">Confirmée</span>
                                             @else
-                                                <a href="{{ route('reservation.confirm', $reservation->id) }}" class="btn btn-sm bg-success-light mr-2">
-                                                    <span >Confirmer</span>
-                                                </a>
+                                                <span class="badge badge-pill bg-warning inv-badge">WIP</span>
                                             @endif
-                                            <a href="{{ route('reservation.customize', $reservation->id) }}"><span class="badge badge-pill bg-success inv-badge">Personnaliser</span></a>
-
                                         </td>
+                                        <td>{{ $reservation->client->email }}</td> 
                                     </tr>
-                                    @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">No data available</td>
+                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

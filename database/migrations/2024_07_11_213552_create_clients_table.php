@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('apt_suite');
             $table->string('city');
             $table->string('zip');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamps();
         });
     }

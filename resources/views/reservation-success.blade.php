@@ -95,6 +95,8 @@
             <div class="alert alert-success" role="alert">
                 Reservation created successfully
             </div>
+            <div class="text-center dont-have">Don’t have an account? <a href="{{ route('register') }}">Register</a></div>
+
         
     </div>
 
