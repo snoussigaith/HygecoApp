@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\BookingController;
+use App\Http\Livewire;
 
 
 use Illuminate\Support\Facades\Route;
@@ -123,7 +124,8 @@ Route::get('/debug', function () {
 });
 
 
-
+Route::view('/buanderie','buanderie')->name('buanderie');
+Route::view('/buanderie-success','buanderie-success')->name('buanderie.success');
 
 
 
