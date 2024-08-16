@@ -111,6 +111,7 @@ Route::get('/reservations/all', [App\Http\Controllers\ReservationController::cla
 
 });
 
+Route::get('/get-token',[App\Http\Controllers\ReservationController::class, 'getToken']);
 
 
 
@@ -126,6 +127,16 @@ Route::get('/debug', function () {
 
 Route::view('/buanderie','buanderie')->name('buanderie');
 Route::view('/buanderie-success','buanderie-success')->name('buanderie.success');
+
+Route::get('/get-times', [App\Http\Controllers\AvailableTimeController::class, 'index'])->name('available-times.index');
+Route::post('/post-times', [App\Http\Controllers\AvailableTimeController::class, 'store'])->name('available-times.store');
+
+Route::get('/available-times-by-date', [App\Http\Controllers\AvailableTimeController::class, 'getAvailableTimesByDate'])->name('available-times.by-date');
+
+
+Route::post('/admin/available-times/toggle-booking', [App\Http\Controllers\AvailableTimeController::class, 'toggleBooking'])->name('available-times.toggle-booking');
+
+
 
 
 

@@ -36,8 +36,8 @@ return [
     ],
 
     'globalpayments' => [
-        'base_url' => env('GLOBALPAYMENTS_BASE_URL', 'https://api.globalpay.com'),
-        'key' => env('GLOBALPAYMENTS_KEY'),
+        'base_url' => env('GLOBALPAYMENTS_BASE_URL'),
+        'app_id' => env('GLOBALPAYMENTS_KEY'),
         'secret' => env('GLOBALPAYMENTS_SECRET'),
     ],
 

@@ -21,7 +21,7 @@
 	<link rel="stylesheet" href="{{ asset('assets/css/feathericon.min.css') }}">
 
 	<!-- Morris CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/plugins/morris/morris.css') }}">
+	<!-- <link rel="stylesheet" href="{{ asset('assets/plugins/morris/morris.css') }}"> -->
 
 	<!-- Custom CSS -->
 	<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
@@ -45,9 +45,9 @@
 	<script src="{{ asset('assets/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
 
 	<!-- Morris JS -->
-	<script src="{{ asset('assets/plugins/raphael/raphael.min.js') }}"></script>
+	<!-- <script src="{{ asset('assets/plugins/raphael/raphael.min.js') }}"></script>
 	<script src="{{ asset('assets/plugins/morris/morris.min.js') }}"></script>
-	<script src="{{ asset('assets/js/chart.morris.js') }}"></script>
+	<script src="{{ asset('assets/js/chart.morris.js') }}"></script> -->
 
 	<!-- Custom JS -->
 

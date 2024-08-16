@@ -57,6 +57,12 @@
 								<li><a href="{{ url('clients/all') }}"> All Clients</a></li>
 							</ul>
 						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span> Available Times </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('/get-times') }}"> All Available Times</a></li>
+							</ul>
+						</li>
+						
 						 @endif
 						  @if(auth()->user()->hasRole('staff'))
 						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span>  Mes Reservations </span> <span class="menu-arrow"></span></a>

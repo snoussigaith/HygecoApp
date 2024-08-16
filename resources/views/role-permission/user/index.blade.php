@@ -73,7 +73,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center">
-                    <img src="assets/img/sent.png" alt="" width="50" height="46">
+                    <img src="" alt="" width="50" height="46">
                     <h3 class="delete_class">Are you sure want to delete this User?</h3>
                     <div class="m-t-20">
                         <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>

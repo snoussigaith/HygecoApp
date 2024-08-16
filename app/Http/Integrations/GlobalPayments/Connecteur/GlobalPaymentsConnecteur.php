@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Integration\GlobalPayments\Connecteur;
+namespace App\Http\Integrations\GlobalPayments\Connecteur;
 
 use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\AcceptsJson;

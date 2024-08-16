@@ -15,11 +15,14 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Http\Integrations\GlobalPayments\Requests\GetTokenRequest;
+use App\Http\Integrations\GlobalPayments\Requests\MakePaymentRequest;
+use Illuminate\Support\Facades\Log;
+use Saloon\Exceptions\SaloonException;
 
 
 
 
-use Illuminate\Support\Facades\Log; // Add this line
 
 
 class ReservationController extends Controller
@@ -111,101 +114,135 @@ class ReservationController extends Controller
         return view('reservation', compact('services', 'options','bookings'));
     }
 
-public function store(Request $request)
-{
-    // Validate input
-    $request->validate([
-        'name' => 'required|string|filled',
-        'last_name' => 'required|string|filled',
-        'phone' => 'required|string|filled',
-        'address' => 'required|string|filled',
-        'apt_suite' => 'required|string|filled',
-        'city' => 'required|string|filled',
-        'zip' => 'required|string|filled',
-        'email' => 'required|email',
-        'service_id' => 'required|integer',
-        'service_name' => 'required|string',
-        'chambre_count' => 'required|integer',
-        'bain_count' => 'required|integer',
-        'cuisine_count' => 'required|integer',
-        'carpet_count' => 'required|integer',
-        'selected_options' => 'required|array',
-        'frequency' => 'required|string',
-        'etat' => 'required|string',
-        'total_price' => 'required|numeric',
-        'date' => 'required|date|date_format:Y-m-d',
-        'time' => 'required|string',
-    ]);
+    public function store(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'name' => 'required|string|filled',
+            'last_name' => 'required|string|filled',
+            'phone' => 'required|string|filled',
+            'address' => 'required|string|filled',
+            'apt_suite' => 'required|string|filled',
+            'city' => 'required|string|filled',
+            'zip' => 'required|string|filled',
+            'email' => 'required|email',
+            'service_id' => 'required|integer',
+            'service_name' => 'required|string',
+            'chambre_count' => 'required|integer',
+            'bain_count' => 'required|integer',
+            'cuisine_count' => 'required|integer',
+            'carpet_count' => 'required|integer',
+            'selected_options' => 'required|array',
+            'frequency' => 'required|string',
+            'etat' => 'required|string',
+            'total_price' => 'required|numeric',
+            'date' => 'required|date|date_format:Y-m-d',
+            'time' => 'required|string',
+        ]);
 
-    try {
-        // Save client
-        $client = new Client();
-        $client->name = $request->input('name');
-        $client->email = $request->input('email');
-        $client->phone = $request->input('phone');
-        $client->address = $request->input('address');
-        $client->apt_suite = $request->input('apt_suite');
-        $client->city = $request->input('city');
-        $client->zip = $request->input('zip');
-        $client->last_name = $request->input('last_name');
-        $client->save();
+        try {
+            // Save client
+            $client = new Client();
+            $client->name = $request->input('name');
+            $client->email = $request->input('email');
+            $client->phone = $request->input('phone');
+            $client->address = $request->input('address');
+            $client->apt_suite = $request->input('apt_suite');
+            $client->city = $request->input('city');
+            $client->zip = $request->input('zip');
+            $client->last_name = $request->input('last_name');
+            $client->save();
 
-        // Save reservation
-        $reservation = new Reservation();
-        $reservation->service_id = $request->input('service_id');
-        $reservation->service_name = $request->input('service_name');
-        $reservation->chambre_count = $request->input('chambre_count');
-        $reservation->bain_count = $request->input('bain_count');
-        $reservation->cuisine_count = $request->input('cuisine_count');
-        $reservation->carpet_count = $request->input('carpet_count');
-        $reservation->options = json_encode($request->input('selected_options'));
-        $reservation->frequency = $request->input('frequency');
-        $reservation->etat = $request->input('etat');
-        $reservation->time = $request->input('time');
-        $reservation->date = $request->input('date');
-        $reservation->total_price = $request->input('total_price');
-        $reservation->client_id = $client->id; // Assuming you have a client_id field in your reservations table
-        $reservation->save();
+            // Save reservation
+            $reservation = new Reservation();
+            $reservation->service_id = $request->input('service_id');
+            $reservation->service_name = $request->input('service_name');
+            $reservation->chambre_count = $request->input('chambre_count');
+            $reservation->bain_count = $request->input('bain_count');
+            $reservation->cuisine_count = $request->input('cuisine_count');
+            $reservation->carpet_count = $request->input('carpet_count');
+            $reservation->options = json_encode($request->input('selected_options'));
+            $reservation->frequency = $request->input('frequency');
+            $reservation->etat = $request->input('etat');
+            $reservation->time = $request->input('time');
+            $reservation->date = $request->input('date');
+            $reservation->total_price = $request->input('total_price');
+            $reservation->client_id = $client->id; // Assuming you have a client_id field in your reservations table
+            $reservation->save();
 
-        // Create user if not exists and generate random password
-        $user = User::where('email', $request->input('email'))->first();
-        $generatedPassword = null;
-        if (!$user) {
-            $generatedPassword = Str::random(16);
-            // Create a new user without a password
-            $user = User::create([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'password' => Hash::make($generatedPassword),
-                // Other fields as needed
-            ]);
+            // Create user if not exists and generate random password
+            $user = User::where('email', $request->input('email'))->first();
+            $generatedPassword = null;
+            if (!$user) {
+                $generatedPassword = Str::random(16);
+                // Create a new user without a password
+                $user = User::create([
+                    'name' => $request->input('name'),
+                    'email' => $request->input('email'),
+                    'password' => Hash::make($generatedPassword),
+                ]);
 
-            // Assign "staff" role to the new user
-            $user->assignRole('staff');
+                // Assign "staff" role to the new user
+                $user->assignRole('staff');
 
-            // Notify the user with the generated password
-            $user->notify(new \App\Notifications\UserCreated($generatedPassword));
+                // Notify the user with the generated password
+                $user->notify(new \App\Notifications\UserCreated($generatedPassword));
+            }
+
+            // Notify the admin
+            $admin = User::role('super-admin')->first(); // Adjust this line according to your admin identification logic
+            if ($admin) {
+                $admin->notify(new \App\Notifications\ReservationCreated($reservation, $client->name));
+            }
+
+            // Process payment
+            // $tokenRequest = new GetTokenRequest();
+            // $tokenResponse = $tokenRequest->send();
+
+            // if ($tokenResponse->failed()) {
+            //     throw new SaloonException('Failed to obtain access token');
+            // }
+
+            // $accessToken = $tokenResponse->json('access_token');
+
+            // $paymentRequest = new MakePaymentRequest(
+            //     token: $accessToken,
+            //     amount: $reservation->total_price,
+            //     currency: 'USD',
+            // );
+
+            // $paymentResponse = $paymentRequest->send();
+
+            // if ($paymentResponse->failed()) {
+            //     throw new SaloonException('Payment processing failed');
+            // }
+
+            return redirect()->route('reservation.success')->with('message', 'Reservation created successfully and payment processed');
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error($e->getMessage());
+
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
         }
-
-        // Notify the admin
-        $admin = User::role('super-admin')->first(); // Adjust this line according to your admin identification logic
-        if ($admin) {
-            $admin->notify(new \App\Notifications\ReservationCreated($reservation, $client->name));
-        }
-
-        return redirect()->route('reservation.success')->with('message', 'Reservation created successfully');
-    } catch (\Exception $e) {
-        // Log the error
-        Log::error($e->getMessage());
-
-        return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
     }
-}
 
+    public function getToken()
+    {
+        $getTokenRequest = new GetTokenRequest();
+        $response = $getTokenRequest->send();
+        
+        if ($response->failed()) {
+            Log::error('Failed to obtain access token: ' . $response->body());
 
+            return response()->json(['error' => 'Failed to obtain access token'], 500);
+        }
+      
+        $accessToken = $response->json();
+        dd($response);
 
-
-
+        // You can now use the access token to make subsequent API requests
+        return response()->json(['access_token' => $accessToken]);
+    }
 
 
     public function getOptions(Request $request, $serviceId)
@@ -226,20 +263,20 @@ public function store(Request $request)
     }
 
     public function markAsRead()
-{
-    // Check if the user is authenticated
-    if (Auth::check()) {
-        // Get the authenticated user
-        $user = Auth::user();
+    {
+        // Check if the user is authenticated
+        if (Auth::check()) {
+            // Get the authenticated user
+            $user = Auth::user();
 
-        // Mark all notifications as read
-        $user->unreadNotifications->markAsRead();
+            // Mark all notifications as read
+            $user->unreadNotifications->markAsRead();
 
-        return redirect()->back()->with('success', 'All notifications marked as read.');
+            return redirect()->back()->with('success', 'All notifications marked as read.');
+        }
+
+        return redirect()->route('login')->with('error', 'You need to be logged in to mark notifications as read.');
     }
-
-    return redirect()->route('login')->with('error', 'You need to be logged in to mark notifications as read.');
-}
 
 
 }
