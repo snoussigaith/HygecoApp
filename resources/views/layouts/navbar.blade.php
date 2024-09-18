@@ -52,6 +52,11 @@
 								<li><a href="{{ url('reservation/all') }}"> All Reservations</a></li>
 							</ul>
 						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span>  Buanderies </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('buanderie/all') }}"> All Reservations</a></li>
+							</ul>
+						</li>
 						<li class="submenu"> <a href="#"><i class="fas fa-user"></i> <span> Clients </span> <span class="menu-arrow"></span></a>
 							<ul class="submenu_class" style="display: none;">
 								<li><a href="{{ url('clients/all') }}"> All Clients</a></li>
@@ -65,9 +70,16 @@
 						
 						 @endif
 						  @if(auth()->user()->hasRole('staff'))
+						<li class="active"> <a href="{{url('client/dashboard')}}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a> </li>
+
 						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span>  Mes Reservations </span> <span class="menu-arrow"></span></a>
 							<ul class="submenu_class" style="display: none;">
 								<li><a href="{{ url('reservations/all') }}"> All Reservations</a></li>
+							</ul>
+						</li>
+						<li class="submenu"> <a href="#"><i class="fas fa-suitcase"></i> <span>  Mes Buanderies </span> <span class="menu-arrow"></span></a>
+							<ul class="submenu_class" style="display: none;">
+								<li><a href="{{ url('buanderies/all') }}"> All Reservations</a></li>
 							</ul>
 						</li>
 						@endif

@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Reservation;
+use App\Models\Buanderie;
+
 
 
 
@@ -52,5 +54,9 @@ class User extends Authenticatable
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+     public function buanderies()
+    {
+        return $this->hasMany(Buanderie::class);
     }
 }

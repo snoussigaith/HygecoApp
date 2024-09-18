@@ -24,6 +24,15 @@
 					<div class="login-right-wrap">
 						<h1>Login</h1>
 						<p class="account-subtitle">Access to our dashboard</p>
+						@if ($errors->any())
+							<div class="alert alert-danger">
+								<ul>
+									@foreach ($errors->all() as $error)
+										<li>{{ $error }}</li>
+									@endforeach
+								</ul>
+							</div>
+						@endif
 						<form method="POST" action="{{ route('login') }}">
                             @csrf
 
@@ -43,11 +52,11 @@
 								<button class="btn btn-primary btn-block" type="submit">Login</button>
 							</div>
 						
-						<div class="text-center forgotpass">
+						<!-- <div class="text-center forgotpass">
 							@if (Route::has('password.request'))
 								<a href="{{ route('password.request') }}">Forgot Password?</a>
 							@endif
-						</div>
+						</div> -->
                         </form>
 						<div class="text-center dont-have">Don’t have an account? <a href="{{ route('register') }}">Register</a></div>
 					</div>

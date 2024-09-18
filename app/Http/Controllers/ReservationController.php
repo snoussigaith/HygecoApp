@@ -60,6 +60,17 @@ class ReservationController extends Controller
             return view('reservation.index', compact('reservations'));
     }
 
+    public function indexResClient() 
+    {
+        $userEmail = Auth::user()->email;
+        $reservations = Reservation::whereHas('client', function($query) use ($userEmail) {
+            $query->where('email', $userEmail);
+        })->orderBy('date')->orderBy('time')->get();
+
+        return view('client.dashboard', compact('reservations'));
+    }
+
+
     public function indexClient() 
     {
         $userEmail = Auth::user()->email;
@@ -82,10 +93,12 @@ class ReservationController extends Controller
     {
         $request->validate([
             'time' => 'required|string',
+            'date' => 'required|date|date_format:Y-m-d',
         ]);
 
         $reservation = Reservation::findOrFail($id);
         $reservation->time = $request->input('time');
+        $reservation->time = $request->input('date');
         $reservation->save();
         
         // Get the client email from the reservation

@@ -26,10 +26,35 @@
                                 <a data-v-39bd6a58="" aria-current="page" href="/pages/services"
                                     class="nav-link {{ Request::is('pages/services') ? 'active' : '' }} " >Services Résidentiels</a>
                             </li>
-                            <li data-v-39bd6a58="" class="mx-2 nav-item">
-                                <a data-v-39bd6a58="" aria-current="page" href="/reservation"
-                                    class="nav-link {{ Request::is('reservation') ? 'active' : '' }} " >Réservation Ménage</a>
+                            <li class="nav-item dropdown mx-2">
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    id="navbarDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >
+                                    Reservation
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <!-- Ménage Reservation Link -->
+                                    <a class="dropdown-item {{ Request::is('reservation') ? 'active' : '' }}" 
+                                    href="/reservation" 
+                                    >
+                                        Ménage
+                                    </a>
+                                    
+                                    <!-- Buanderie Reservation Link -->
+                                    <a class="dropdown-item {{ Request::is('buanderie') ? 'active' : '' }}" 
+                                    href="/buanderie" 
+                                    >
+                                        Buanderie
+                                    </a>
+                                </div>
                             </li>
+
                              <li data-v-39bd6a58="" class="mx-2 nav-item">
                                 <a data-v-39bd6a58="" aria-current="page" href="/pages/plan"
                                     class="nav-link {{ Request::is('pages/plan') ? 'active' : '' }}" >Bons Plans</a>
@@ -43,18 +68,24 @@
                                     class="nav-link {{ Request::is('pages/contact') ? 'active' : '' }}" >Contactez-Nous</a>
                             </li>
                         </ul>
-                        @if (Route::has('login'))
-                          @auth
-                           <a data-v-39bd6a58="" href="{{ route('dashboard') }}" class="mb-0 btn btn-sm me-1 bg-gradient-success">
-                            Dashboard </a>
-                      
-                          @else    
-                       
-                              <a data-v-39bd6a58="" href="{{ route('login') }}" class="mb-0 btn btn-sm me-1 bg-gradient-success">
-                             Se
-                            connecter </a>
-                           @endauth
-                        @endif     
+                       @if (Route::has('login'))
+                        @auth
+                            @if (Auth::user()->hasRole('super-admin'))
+                                <a href="{{ route('dashboard') }}" class="mb-0 btn btn-sm me-1 bg-gradient-success">
+                                    Dashboard
+                                </a>
+                            @elseif (Auth::user()->hasRole('staff'))
+                                <a href="{{ route('client.dashboard') }}" class="mb-0 btn btn-sm me-1 bg-gradient-success">
+                                    Dashboard
+                                </a>
+                            @endif
+                        @else    
+                            <a href="{{ route('login') }}" class="mb-0 btn btn-sm me-1 bg-gradient-success">
+                                Se connecter
+                            </a>
+                        @endauth
+                    @endif
+
                     </div>
                 </div>
             </nav>

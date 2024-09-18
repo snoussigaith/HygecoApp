@@ -91,7 +91,7 @@ Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('b
 Route::get('/reservation/customize/{id}', [App\Http\Controllers\ReservationController::class, 'customize'])->name('reservation.customize');
 Route::post('/reservation/customize/{id}', [App\Http\Controllers\ReservationController::class, 'updateCustomization'])->name('reservation.updateCustomization');
 
-
+Route::get('/buanderie/all', [App\Http\Controllers\BuanderieController::class, 'index'])->name('buanderie');
 });
 Route::get('/reservation', [App\Http\Controllers\ReservationController::class, 'create'])->name('reservation.create');
 Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
@@ -107,13 +107,20 @@ Route::get('/mark-as-read', [App\Http\Controllers\ReservationController::class,'
 
 Route::group(['middleware' => ['role:staff']], function() {
 //Booking
+Route::get('/buanderies/all', [App\Http\Controllers\BuanderieController::class, 'indexClient'])->name('buanderies');
+Route::get('/client/dashboard', [App\Http\Controllers\ReservationController::class, 'indexResClient'])->name('client.dashboard');
 Route::get('/reservations/all', [App\Http\Controllers\ReservationController::class, 'indexClient'])->name('reservations');
+
 
 });
 
 Route::get('/get-token',[App\Http\Controllers\ReservationController::class, 'getToken']);
 
 
+
+Route::get('/buanderie-success', function () {
+    return view('buanderie-success'); 
+})->name('buanderie.success');
 
 Route::get('/reservation-success', function () {
     return view('reservation-success'); 
@@ -127,6 +134,8 @@ Route::get('/debug', function () {
 
 Route::view('/buanderie','buanderie')->name('buanderie');
 Route::view('/buanderie-success','buanderie-success')->name('buanderie.success');
+Route::post('/buanderie-add', [App\Http\Controllers\BuanderieController::class, 'store'])->name('buanderie.store');
+
 
 Route::get('/get-times', [App\Http\Controllers\AvailableTimeController::class, 'index'])->name('available-times.index');
 Route::post('/post-times', [App\Http\Controllers\AvailableTimeController::class, 'store'])->name('available-times.store');

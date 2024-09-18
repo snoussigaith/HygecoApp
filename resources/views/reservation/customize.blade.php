@@ -22,6 +22,10 @@
                                 <label for="time">New Time</label>
                                 <input type="text" name="time" id="time" class="form-control" value="{{ $reservation->time }}">
                             </div>
+                            <div class="form-group">
+                                <label for="date">New Date</label>
+                                <input type="date" name="date" id="date" class="form-control" value="{{ $reservation->date }}">
+                            </div>
                             <button type="submit" class="btn btn-primary">Update Time</button>
                         </form>
                     </div>
