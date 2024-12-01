@@ -47,11 +47,14 @@
                                         <a href="{{ route('mark-as-read') }}">
                                             <div class="media">
                                                 <span class="avatar avatar-sm">
-                                                    <img class="avatar-img rounded-circle" alt="User Image" src="{{ asset('assets/img/profiles/avatar-11.jpg') }}">
+                                                    <img class="avatar-img rounded-circle" alt="User Image" src="{{ asset('assets/img/h-logo.png') }}">
                                                 </span>
                                                 <div class="media-body">
-                                                    <p class="noti-details"><span class="noti-title">Admin</span> has sent you a confirmation in the amount of <span
-														class="noti-title">{{ $notification->data['total_price'] }}$</span></p>
+                                                    <p class="noti-details"><span class="noti-title">L'administrateur Hygeco </span>  a confirmé votre réservation. Détails :  </p>
+                                                        <p class="noti-details"><span class="noti-title">Date: </span>{{ $notification->data['date'] }} </p>
+                                                        <p class="noti-details"><span class="noti-title">Temps: </span>{{ $notification->data['time'] }} </p>
+                                                        <p class="noti-details"><span class="noti-title">Prix:</span> {{ $notification->data['total_price'] }}$</p>
+                                                        <p class="noti-details">Nous vous remercions pour votre confiance</p>
 												<p class="noti-time"><span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
 												</p>
                                                     

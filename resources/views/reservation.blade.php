@@ -225,9 +225,11 @@
                         <input type="date" placeholder="choose a date" name="date" id="date" class="form-control">
                         <label for="service-time">Choose a time:</label>
                         <select class="form-control" id="time" name="time" required>
-                            <option value="">Select a time</option>
-                            
+                            <option value="9:00">9:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="15:00">15:00</option>
                         </select>
+
 
                     </div>
                   
@@ -376,57 +378,23 @@
   
 
 <script>
-    //  function initializeAutocomplete() {
-    //     var input = document.getElementById('address');
-    //     var autocomplete = new google.maps.places.Autocomplete(input);
+   
 
-    //     autocomplete.setFields(['address_components', 'geometry', 'formatted_address']);
-
-    //     autocomplete.addListener('place_changed', function () {
-    //         var place = autocomplete.getPlace();
-            
-    //         // Get each component of the address from the place details
-    //         var addressComponents = place.address_components;
-
-    //         // Loop through the address components and fill corresponding fields
-    //         for (var i = 0; i < addressComponents.length; i++) {
-    //             var component = addressComponents[i].types[0];
-
-    //             if (component === 'street_number') {
-    //                 document.getElementById('address').value = addressComponents[i].long_name;
-    //             } else if (component === 'route') {
-    //                 document.getElementById('address').value += ' ' + addressComponents[i].long_name;
-    //             } else if (component === 'locality') {
-    //                 document.getElementById('city').value = addressComponents[i].long_name;
-    //             } else if (component === 'postal_code') {
-    //                 document.getElementById('zip').value = addressComponents[i].long_name;
-    //             } 
-    //         }
-    //     });
-    // }
-
-    // google.maps.event.addDomListener(window, 'load', initializeAutocomplete);
-
-   document.getElementById('date').addEventListener('change', function() {
+// Event listener for date change
+document.getElementById('date').addEventListener('change', function () {
     const selectedDate = this.value;
+    const timeSelect = document.getElementById('time');
 
+    // Populate predefined time slots
     if (selectedDate) {
-        fetch(`{{ route('available-times.by-date') }}?date=${selectedDate}`)
-            .then(response => response.json())
-            .then(data => {
-                const timeSelect = document.getElementById('time');
-                timeSelect.innerHTML = '<option value="">Select a time</option>'; // Clear previous options
-
-                data.forEach(timeSlot => {
-                    const option = document.createElement('option');
-                    option.value = timeSlot.start_time;
-                    option.textContent = `${timeSlot.start_time} - ${timeSlot.end_time}`;
-                    timeSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching available times:', error));
+        timeSelect.innerHTML = `
+            <option value="">Select a time</option>
+            <option value="9:00">9:00</option>
+            <option value="12:00">12:00</option>
+            <option value="15:00">15:00</option>
+        `;
     }
-}); 
+});
 const allOptions = @json($options);
 let selectedOptions = new Set();
 let nonDeselectableOptions = new Set();
@@ -552,10 +520,12 @@ function updateTotalPrice() {
     document.querySelector('.room-info .service').textContent = `Service: ${selectedServiceName}`;
 
     // Update service-info section
-    const selectedDate = document.getElementById('date').value || '';
-    const selectedTime = document.getElementById('time').value || '';
-    document.querySelector('.service-info .service-date').textContent = `Date: ${selectedDate}`;
-    document.querySelector('.service-info .service-type').textContent = `Heure: ${selectedTime}`;
+    // const selectedDate = document.getElementById('date').value || '';
+    // const selectedTime = document.getElementById('time').value || '';
+    // document.querySelector('.service-info .service-date').textContent = `Date: ${selectedDate}`;
+    // document.querySelector('.service-info .service-type').textContent = `Heure: ${selectedTime}`;
+     document.querySelector('.service-info .service-date').textContent = `Date: ${document.getElementById('date').value || ''}`;
+    document.querySelector('.service-info .service-type').textContent = `Heure: ${document.getElementById('time').value || ''}`;
     console.log(`Selected Service: ${selectedServiceName}`);
     console.log(`Selected Options: ${Array.from(selectedOptions)}`);
     console.log(`Total Price: ${totalPrice.toFixed(2)}`);
