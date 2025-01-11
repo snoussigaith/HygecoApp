@@ -5,7 +5,6 @@ namespace App\Http\Integrations\GlobalPayments\Requests;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Traits\Body\HasJsonBody;
-use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Response;
 use Log;
 

@@ -108,7 +108,7 @@
                 <div class="text-center shadow icon icon-shape icon-xs rounded-circle bg-gradient-secondary"></div>
                 <div><span class="ps-3">Élimination minutieuse de la poussière et des débris</span></div>
               </div>
-              <a href="/pages/contact" class="mt-3 mb-0 btn btn-icon d-lg-block bg-gradient-success">Réserver</a>
+              <a href="/pages/contact" class=" mt-3 mb-0 btn btn-icon d-lg-block bg-gradient-success" >Réserver</a>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@
                 <div class="text-center shadow icon icon-shape icon-xs rounded-circle bg-gradient-secondary"></div>
                 <div><span class="ps-3">Élimination minutieuse de la poussière et des débris</span></div>
               </div>
-              <a href="/pages/contact" class="mt-3 mb-0 btn btn-icon d-lg-block bg-gradient-success">Réserver</a>
+              <a href="/pages/contact" class=" mb-0 btn btn-icon d-lg-block bg-gradient-success"style="margin-top: 75px;">Réserver</a>
             </div>
           </div>
         </div>

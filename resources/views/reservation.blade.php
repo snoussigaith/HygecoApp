@@ -32,6 +32,8 @@
         <script async="" defer="" src="https://buttons.github.io/buttons.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+            <script src="https://js.stripe.com/v3/"></script>
+
 
 
         <link href="{{url('assets/css/service.css')}}" rel=" stylesheet" />
@@ -321,10 +323,21 @@
                             </div>
                         </div>
                     </div>
+                   <!-- Stripe Card Element -->
+                        <div class="form-group">
+                            <label for="card-element">Credit or debit card</label>
+                            <div id="card-element" class="form-control">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+                        </div>
+                        <input type="hidden" name="payment_method_id" id="payment-method-id">
+
                     
                     
 
-                    <button type="submit" class="btn btn-primary">Réserver</button>
+                    <button type="submit" id="submit-button" class="btn btn-primary">Réserver</button>
                 
             </div>
 
@@ -353,6 +366,7 @@
         </div>
     </div>
 </div>
+
         </div>
         </form>
             </div>
@@ -395,10 +409,10 @@ document.getElementById('date').addEventListener('change', function () {
         `;
     }
 });
+
 const allOptions = @json($options);
 let selectedOptions = new Set();
 let nonDeselectableOptions = new Set();
-
 
 function loadOptions(serviceId) {
     const service = @json($services).find(service => service.id == serviceId);
@@ -449,7 +463,6 @@ function loadOptions(serviceId) {
     }
 }
 
-
 function toggleOption(optionId, optionPrice) {
     // Prevent deselection of non-deselectable options
     if (nonDeselectableOptions.has(optionId)) {
@@ -477,8 +490,6 @@ function updateTotalPrice() {
     const bainCount = parseInt(document.getElementById('bain_count').value) || 0;
     const cuisineCount = parseInt(document.getElementById('cuisine_count').value) || 0;
     const carpetCount = parseInt(document.getElementById('carpet_count').value) || 0;
-
-     
 
     const chambrePrice = 15;   // Price per chambre
     const bainPrice = 30;      // Price per salle de bain
@@ -512,7 +523,7 @@ function updateTotalPrice() {
     }
 
     document.getElementById('total-price').textContent = totalPrice.toFixed(2);
-     // Update booking-info section
+    // Update booking-info section
     document.querySelector('.room-info .bedroom').textContent = `Chambres: ${chambreCount}`;
     document.querySelector('.room-info .bathroom').textContent = `Salles de bain: ${bainCount}`;
     document.querySelector('.room-info .kitchen').textContent = `Cuisines: ${cuisineCount}`;
@@ -520,11 +531,7 @@ function updateTotalPrice() {
     document.querySelector('.room-info .service').textContent = `Service: ${selectedServiceName}`;
 
     // Update service-info section
-    // const selectedDate = document.getElementById('date').value || '';
-    // const selectedTime = document.getElementById('time').value || '';
-    // document.querySelector('.service-info .service-date').textContent = `Date: ${selectedDate}`;
-    // document.querySelector('.service-info .service-type').textContent = `Heure: ${selectedTime}`;
-     document.querySelector('.service-info .service-date').textContent = `Date: ${document.getElementById('date').value || ''}`;
+    document.querySelector('.service-info .service-date').textContent = `Date: ${document.getElementById('date').value || ''}`;
     document.querySelector('.service-info .service-type').textContent = `Heure: ${document.getElementById('time').value || ''}`;
     console.log(`Selected Service: ${selectedServiceName}`);
     console.log(`Selected Options: ${Array.from(selectedOptions)}`);
@@ -553,88 +560,123 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-document.getElementById('booking-form').addEventListener('submit', async function (event) {
-    event.preventDefault();
+// Stripe integration
+document.addEventListener("DOMContentLoaded", async () => {
+    const stripe = Stripe("{{ env('STRIPE_PUBLIC') }}");
+    const elements = stripe.elements();
 
-    const formData = new FormData(event.target);
-    const serviceId = parseInt(formData.get('service_id'));
-    const chambreCount = parseInt(formData.get('chambre_count'));
-    const bainCount = parseInt(formData.get('bain_count'));
-    const cuisineCount = parseInt(formData.get('cuisine_count'));
-    const carpetCount = parseInt(formData.get('carpet_count'));
-    const selectedOptionsArray = Array.from(selectedOptions).map((optionId) => {
-        const option = allOptions.find((option) => option.id === optionId);
-        return option.name;
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    const form = document.getElementById('booking-form');
+    const submitButton = document.getElementById('submit-button');
+    const paymentMethodInput = document.getElementById('payment-method-id');
+    const cardErrors = document.getElementById('card-errors');
+
+    cardElement.on('change', function (event) {
+        if (event.error) {
+            cardErrors.textContent = event.error.message;
+        } else {
+            cardErrors.textContent = '';
+        }
+
+        // Enable or disable the submit button
+        submitButton.disabled = event.empty || !!event.error;
     });
-    const clientName = formData.get('name');
-    const clientEmail = formData.get('email');
-    const clientLastName = formData.get('last_name');
-    const clientPhone = formData.get('phone');
-    const clientAddress = formData.get('address');
-    const clientApt = formData.get('apt_suite');
-    const clientCity = formData.get('city');
-    const clientZip = formData.get('zip');
-    const date = formData.get('date');
-     const timeSelect = document.getElementById('time');
-    const selectedTime = timeSelect ? timeSelect.value : null;
-    const serviceSelect = document.getElementById('service');
-    const selectedServiceName = serviceSelect.options[serviceSelect.selectedIndex].text;
-    const totalPrice = parseFloat(document.getElementById('total-price').textContent);
 
-    // Get the selected frequency and etat
-    const frequencySelect = document.getElementById('frequency');
-    const selectedFrequency = frequencySelect ? frequencySelect.value : null;
-    const etatSelect = document.getElementById('etat');
-    const selectedEtat = etatSelect.value;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    try {
-        const response = await fetch('{{ route('reservation.store') }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                service_id: serviceId,
-                service_name: selectedServiceName,
-                chambre_count: chambreCount,
-                bain_count: bainCount,
-                cuisine_count: cuisineCount,
-                carpet_count: carpetCount,
-                selected_options: selectedOptionsArray,
-                total_price: totalPrice,
-                name: clientName,
-                email: clientEmail,
-                last_name: clientLastName,
-                phone: clientPhone,
-                address: clientAddress,
-                apt_suite: clientApt,
-                city: clientCity,
-                zip: clientZip,
-                frequency: selectedFrequency,
-                etat: selectedEtat,
-                date: date,
-                time: selectedTime,
-            }),
+        // Create the Payment Method
+        submitButton.disabled = true;
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: cardElement,
         });
 
-        if (response.ok) {
-            window.location.href = '{{ route('reservation.success') }}';
-        
-        } else {
-            const errorData = await response.json();
-            console.error('Error:', errorData.error);
+        if (error) {
+            cardErrors.textContent = error.message;
+            submitButton.disabled = false;
+            return;
         }
-    } catch (error) {
-        console.error('Fetch error:', error);
-    }
+
+        // Add the Payment Method ID to the form and submit
+        paymentMethodInput.value = paymentMethod.id;
+
+        const formData = new FormData(form);
+        const serviceId = parseInt(formData.get('service_id'));
+        const chambreCount = parseInt(formData.get('chambre_count'));
+        const bainCount = parseInt(formData.get('bain_count'));
+        const cuisineCount = parseInt(formData.get('cuisine_count'));
+        const carpetCount = parseInt(formData.get('carpet_count'));
+        const selectedOptionsArray = Array.from(selectedOptions).map((optionId) => {
+            const option = allOptions.find((option) => option.id === optionId);
+            return option.name;
+        });
+        const clientName = formData.get('name');
+        const clientEmail = formData.get('email');
+        const clientLastName = formData.get('last_name');
+        const clientPhone = formData.get('phone');
+        const clientAddress = formData.get('address');
+        const clientApt = formData.get('apt_suite');
+        const clientCity = formData.get('city');
+        const clientZip = formData.get('zip');
+        const date = formData.get('date');
+        const timeSelect = document.getElementById('time');
+        const selectedTime = timeSelect ? timeSelect.value : null;
+        const serviceSelect = document.getElementById('service');
+        const selectedServiceName = serviceSelect.options[serviceSelect.selectedIndex].text;
+        const totalPrice = parseFloat(document.getElementById('total-price').textContent);
+
+        // Get the selected frequency and etat
+        const frequencySelect = document.getElementById('frequency');
+        const selectedFrequency = frequencySelect ? frequencySelect.value : null;
+        const etatSelect = document.getElementById('etat');
+        const selectedEtat = etatSelect.value;
+
+        try {
+            const response = await fetch('{{ route('reservation.store') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    service_id: serviceId,
+                    service_name: selectedServiceName,
+                    chambre_count: chambreCount,
+                    bain_count: bainCount,
+                    cuisine_count: cuisineCount,
+                    carpet_count: carpetCount,
+                    selected_options: selectedOptionsArray,
+                    total_price: totalPrice,
+                    name: clientName,
+                    email: clientEmail,
+                    last_name: clientLastName,
+                    phone: clientPhone,
+                    address: clientAddress,
+                    apt_suite: clientApt,
+                    city: clientCity,
+                    zip: clientZip,
+                    frequency: selectedFrequency,
+                    etat: selectedEtat,
+                    date: date,
+                    time: selectedTime,
+                    payment_method_id: paymentMethod.id, // Include payment method ID
+                }),
+            });
+
+            if (response.ok) {
+                window.location.href = '{{ route('reservation.success') }}';
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData.error);
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
+    });
 });
-// $( function() {
-//     $( "#date" ).datepicker({
-//         dateFormat: 'yy-mm-dd',
-//         minDate: 0
-//     });
-// } );
 
 
 </script>

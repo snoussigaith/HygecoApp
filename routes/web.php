@@ -98,6 +98,7 @@ Route::post('/reservation', [App\Http\Controllers\ReservationController::class, 
 Route::get('/mark-as-read', [App\Http\Controllers\ReservationController::class,'markAsRead'])->name('mark-as-read');
 
 
+Route::post('/capture-payment/{reservationId}', [ReservationController::class, 'capturePayment']);
 
 
 

@@ -127,7 +127,7 @@ class ReservationController extends Controller
         return view('reservation', compact('services', 'options','bookings'));
     }
 
-    public function store(Request $request)
+    public function stores(Request $request)
     {
         // Validate input
         $request->validate([
@@ -239,12 +239,127 @@ class ReservationController extends Controller
         }
     }
 
+   public function store(Request $request)
+{
+    // Validate input
+    $request->validate([
+        'name' => 'required|string|filled',
+        'last_name' => 'required|string|filled',
+        'phone' => 'required|string|filled',
+        'address' => 'required|string|filled',
+        'apt_suite' => 'required|string|filled',
+        'city' => 'required|string|filled',
+        'zip' => 'required|string|filled',
+        'email' => 'required|email',
+        'service_id' => 'required|integer',
+        'service_name' => 'required|string',
+        'chambre_count' => 'required|integer',
+        'bain_count' => 'required|integer',
+        'cuisine_count' => 'required|integer',
+        'carpet_count' => 'required|integer',
+        'selected_options' => 'required|array',
+        'frequency' => 'required|string',
+        'etat' => 'required|string',
+        'total_price' => 'required|numeric',
+        'date' => 'required|date|date_format:Y-m-d',
+        'time' => 'required|string',
+        'payment_method_id' => 'required|string',
+    ]);
+
+    try {
+        // Save client
+        $client = new Client();
+        $client->name = $request->input('name');
+        $client->email = $request->input('email');
+        $client->phone = $request->input('phone');
+        $client->address = $request->input('address');
+        $client->apt_suite = $request->input('apt_suite');
+        $client->city = $request->input('city');
+        $client->zip = $request->input('zip');
+        $client->last_name = $request->input('last_name');
+        $client->save();
+
+        // Save reservation
+        $reservation = new Reservation();
+        $reservation->service_id = $request->input('service_id');
+        $reservation->service_name = $request->input('service_name');
+        $reservation->chambre_count = $request->input('chambre_count');
+        $reservation->bain_count = $request->input('bain_count');
+        $reservation->cuisine_count = $request->input('cuisine_count');
+        $reservation->carpet_count = $request->input('carpet_count');
+        $reservation->options = json_encode($request->input('selected_options'));
+        $reservation->frequency = $request->input('frequency');
+        $reservation->etat = $request->input('etat');
+        $reservation->time = $request->input('time');
+        $reservation->date = $request->input('date');
+        $reservation->total_price = $request->input('total_price');
+        $reservation->client_id = $client->id;
+        $reservation->save();
+
+        // Authorize payment using Stripe
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $totalAmount = ($request->input('total_price') + 100) * 100; // Convert to cents and add $100 buffer
+        $paymentMethodId = $request->input('payment_method_id'); 
+
+        // Create PaymentIntent with manual capture
+        $paymentIntent = \Stripe\PaymentIntent::create([
+            'amount' => $totalAmount,
+            'currency' => 'usd',
+            'payment_method' => $paymentMethodId, // Use payment method ID from frontend
+            'capture_method' => 'manual', // Authorize only
+            'confirm' => true,
+            'return_url' => route('reservation.success'), // Add return URL
+        ]);
+
+        // Log the PaymentIntent ID
+        Log::info('PaymentIntent created: ' . $paymentIntent->id);
+
+        // Save payment intent ID for later capturing
+        $reservation->payment_intent_id = $paymentIntent->id;
+        $reservation->save();
+
+        return redirect()->route('reservation.success')->with('message', 'Reservation created successfully and payment authorized.');
+    } catch (\Stripe\Exception\ApiErrorException $e) {
+        // Log the Stripe error
+        Log::error('Stripe API error: ' . $e->getMessage());
+        Log::error('Stripe Error Details: ', $e->getJsonBody());
+
+        return response()->json(['error' => 'Payment authorization failed. Please try again later.'], 500);
+    } catch (\Exception $e) {
+        // Log general errors
+        Log::error('Error: ' . $e->getMessage());
+
+        return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+    }
+}
+public function capturePayment($reservationId)
+{
+    $reservation = Reservation::findOrFail($reservationId);
+
+    try {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($reservation->payment_intent_id);
+
+        $finalAmount = $reservation->total_price + 100; // Final amount in cents
+
+        $paymentIntent->capture(['amount_to_capture' => $finalAmount]);
+
+        return response()->json(['success' => 'Payment captured successfully.']);
+    } catch (\Exception $e) {
+        Log::error($e->getMessage());
+
+        return response()->json(['error' => 'Failed to capture payment.'], 500);
+    }
+}
+
     public function getToken()
     {
         $getTokenRequest = new GetTokenRequest();
         $response = $getTokenRequest->send();
         
-        if ($response->failed()) {
+        if ($response->failed()) { 
             Log::error('Failed to obtain access token: ' . $response->body());
 
             return response()->json(['error' => 'Failed to obtain access token'], 500);
